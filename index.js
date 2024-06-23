@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-// const { ReadUser, ReadCourse, GetCourseInfo } = require('./ed/ed-handler.js');
+const ed_poll = require('./ed/ed-adapter.mjs');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -73,3 +73,4 @@ function pollForMessages() {
 
 // Log in to Discord with your client's token
 client.login(process.env.DISCORD_TOKEN);
+ed_poll(client);
