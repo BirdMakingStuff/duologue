@@ -3,8 +3,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import axios from axios;
 import 'dotenv/config';
-import { error } from 'console';
-import {  } from 'discord.js';
 
 // reading token from .env file
 
@@ -57,17 +55,15 @@ realms: defines the organisations that people are in.
 user: describes the logged in user
 */
 
-export function ReadUser() {
+export async function ReadUser() {
     const tokens = [];
     for (const token in course_tokens) {
         // Only get courses that have not been indexed yet.
         if (tokens.indexOf(token) !== -1) {
             continue;
         }
-        tokens.push(token);
-        // Index courses for each token.
-        axios.get('/user',  { headers: { Authorisation: `Bearer ${token}` } })
-        .then(response => {
+        try {
+            const response = await axios.get('/user',  { headers: { Authorisation: `Bearer ${token}` } });
             response.data.courses.foreach(course => {
                 if (!(course.id in ed_storage.courses)) {
                     ed_storage.courses[course.id] = {
@@ -76,12 +72,13 @@ export function ReadUser() {
                     };
                     ed_storage.announcementBindings[course.id] = [];
                     ed_storage.threadBindings[course.id] = [];
+                    console.log(`indexed course ${course.id}: ${course.code}: ${course.name}`);
                 }
-            })
-        })
-        .catch(error => {
+            });
+            tokens.push(token);
+        } catch (error) {
             throw new Error(error);
-        });
+        }
     }
 }
 
@@ -131,20 +128,18 @@ export function ReadCourse(courseId) {
     if (!(courseId in ed_storage.courses)) {
         throw new Error("Course not indexed yet. Please run ReadUser first.")
     }
-    axios.get(`/courses/${courseId}/threads?limit=30&sort=new`, { headers: { Authorisation: `Bearer ${course_tokens[courseId]}` } })
-        .then(response => {
-            const newThreads = [];
-            response.data.threads.forEach(thread => {
-                if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
-                    newThreads.push(thread);
-                }
-            });
-            ed_storage.courses[courseId].lastTimestamp = Date.now();
-            return newThreads;
-        }).catch(error => {
-            console.error(error);
+    return new Promise((resolve, reject) => {
+        const response = axios.get(`/courses/${courseId}/threads?limit=30&sort=new`, { headers: { Authorisation: `Bearer ${course_tokens[courseId]}` } });
+        const newThreads = [];
+        response.data.threads.forEach(thread => {
+            if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
+                newThreads.push(thread);
+            }
         });
-    saveStorageToDisk();
+        ed_storage.courses[courseId].lastTimestamp = Date.now();
+        saveStorageToDisk();
+        resolve(newThreads);
+    })
 }
 
 /*
@@ -177,6 +172,9 @@ Removes course bindings
 */
 
 export function UnbindCourse(courseId, channelId) {
+    if (!CourseExists(courseId)) {
+        throw new Error(`Course ${courseId} does not exist.`);
+    }
     if (channelId in ed_storage.announcementBindings[courseId]) {
         ed_storage.announcementBindings[courseId].splice(ed_storage.announcementBindings[courseId].indexOf(channelId), 1);
     }
