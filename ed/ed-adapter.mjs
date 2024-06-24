@@ -1,29 +1,32 @@
-import { init, ReadCourse, } from './ed-handler.mjs';
+import { init, GetCourses, ReadCourse, GetCourseBindings } from './ed-handler.mjs';
 import { Client, GatewayIntentBits, Collection, Events, EmbedBuilder } from 'discord.js';
 
 class EdAdapter {
     constructor(client) {
         this.discordClient = client;
-    }
-    
-    poll(discordClient) {
         try {
             init();
         } catch (error) {
             console.error(error);
             return;
         }
+    }
+    
+    poll() {
         setInterval(() => {
-            for (const courseId in courseBindings) {
-                const newThreads = ReadCourse(courseId);
-                if (newThreads.length > 0) {
-                    const channel = discordClient.channels.cache.get(courseBindings[courseId]);
-                    if (!channel) {
-                        console.error(`Channel with ID ${courseBindings[courseId]} not found.`);
-                        continue;
+            for (const courseId of GetCourses() ) {
+                const threads = ReadCourse(courseId);
+                for (const thread of threads) {
+                    if (thread.user !== null) {
+                        if (thread.user.course_role !== 'student') {
+                            for (const channelId in GetCourseBindings(courseId, 'announcements')) {
+                                this.postMessage(channelId, thread);
+                            }
+                            continue;
+                        }
                     }
-                    for (const thread of newThreads) {
-                        
+                    for (const channelId in GetCourseBindings(courseId, 'normal')) {
+                        this.postMessage(channelId, thread);
                     }
                 }
             }

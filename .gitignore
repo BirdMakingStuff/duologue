@@ -172,3 +172,4 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/dotenv,node,windows
 ed/ed-config.json
 ed/ed-tokens.json
+ed/ed-storage.json
