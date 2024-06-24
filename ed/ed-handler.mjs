@@ -129,16 +129,20 @@ export function ReadCourse(courseId) {
         throw new Error("Course not indexed yet. Please run ReadUser first.")
     }
     return new Promise((resolve, reject) => {
-        const response = axios.get(`/courses/${courseId}/threads?limit=30&sort=new`, { headers: { Authorisation: `Bearer ${course_tokens[courseId]}` } });
-        const newThreads = [];
-        response.data.threads.forEach(thread => {
-            if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
-                newThreads.push(thread);
-            }
-        });
-        ed_storage.courses[courseId].lastTimestamp = Date.now();
-        saveStorageToDisk();
-        resolve(newThreads);
+        try {
+            const response = axios.get(`/courses/${courseId}/threads?limit=30&sort=new`, { headers: { Authorisation: `Bearer ${course_tokens[courseId]}` } });
+            const newThreads = [];
+            response.data.threads.forEach(thread => {
+                if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
+                    newThreads.push(thread);
+                }
+            });
+            ed_storage.courses[courseId].lastTimestamp = Date.now();
+            saveStorageToDisk();
+            resolve(newThreads);
+        } catch (error) {
+            reject(error);
+        }
     })
 }
 
@@ -229,6 +233,17 @@ function saveStorageToDisk() {
 you can also access specific threads by GET from https://edstem.org/api/threads/<id>?view=1 which will return a similar response to above,
 albeit the property is called thread rather than threads
 */
+
+export function GetThread(threadId) {
+    return new Promise((resolve, reject) => {
+        try {
+            const response = axios.get(`/threads/${threadId}/threads?limit=30&sort=new`, { headers: { Authorisation: `Bearer ${course_tokens[courseId]}` } });
+            resolve(response.data.thread);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
 
 export default function init() {
     // Get storage file to get latest post IDs. If not found, then create an object to store it in.
