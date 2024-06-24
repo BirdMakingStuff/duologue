@@ -4,7 +4,7 @@ import * as path from 'path';
 import axios from 'axios';
 import 'dotenv/config';
 
-// set base URL for axios
+// set axios defaults
 axios.defaults.baseURL = 'https://edstem.org/api/';
 
 // setting dirname
@@ -14,7 +14,7 @@ const __dirname = import.meta.dirname;
 let ed_axios = axios.create({
     baseURL: 'https://edstem.org/api/',
     timeout: 1000,
-    headers: { Authorisation: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}` },
 });
 */
 
@@ -62,22 +62,23 @@ user: describes the logged in user
 
 export async function ReadUser() {
     const tokens = [];
-    for (const token in course_tokens) {
+    for (const [_, token] of Object.entries(course_tokens)) {
         // Only get courses that have not been indexed yet.
+        console.log(`Reading user with token ${token}`);
         if (tokens.indexOf(token) !== -1) {
             continue;
         }
         try {
-            const response = await axios.get('/user',  { headers: { Authorisation: `Bearer ${token}` } });
-            response.data.courses.foreach(course => {
-                if (!(course.id in ed_storage.courses)) {
-                    ed_storage.courses[course.id] = {
+            const response = await axios.get('/user',  { headers: { 'Authorization': `Bearer ${token}` } });
+            response.data.courses.forEach(course => {
+                if (!(course.course.id in ed_storage.courses)) {
+                    ed_storage.courses[course.course.id] = {
                         lastTimestamp: Date.parse("1970-01-01T00:00:00Z"),
                         name: `${course.code}: ${course.name}`
                     };
-                    ed_storage.announcementBindings[course.id] = [];
-                    ed_storage.threadBindings[course.id] = [];
-                    console.log(`indexed course ${course.id}: ${course.code}: ${course.name}`);
+                    ed_storage.announcementBindings[course.course.id] = [];
+                    ed_storage.threadBindings[course.course.id] = [];
+                    console.log(`indexed course ${course.course.id}: ${course.course.code}: ${course.course.name}`);
                 }
             });
             tokens.push(token);
@@ -92,7 +93,7 @@ Gets a list of courses
 */
 
 export function GetCourses() {
-    return ed_storage.courses.keys();
+    return Object.keys(ed_storage.courses);
 }
 
 /*
@@ -126,29 +127,27 @@ For Lecturer's avatar, goto https://static.au.edusercontent.com/avatars/<avatarI
 */
 
 // Reads course if it has been indexed.
-export function ReadCourse(courseId) {
+export async function ReadCourse(courseId) {
     if (!(courseId in course_tokens)) {
         throw new Error("Course token not found. Please add it to ed-tokens.");
     }
     if (!(courseId in ed_storage.courses)) {
         throw new Error("Course not indexed yet. Please run ReadUser first.")
     }
-    return new Promise((resolve, reject) => {
-        try {
-            const response = axios.get(`/courses/${courseId}/threads?limit=30&sort=new`, { headers: { Authorisation: `Bearer ${course_tokens[courseId]}` } });
-            const newThreads = [];
-            response.data.threads.forEach(thread => {
-                if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
-                    newThreads.push(thread);
-                }
-            });
-            ed_storage.courses[courseId].lastTimestamp = Date.now();
-            saveStorageToDisk();
-            resolve(newThreads);
-        } catch (error) {
-            reject(error);
-        }
-    })
+    try {
+        const response = await axios.get(`/courses/${courseId}/threads?limit=30&sort=new`, { headers: { 'Authorization': `Bearer ${course_tokens[courseId]}` } });
+        const newThreads = [];
+        response.data.threads.forEach(thread => {
+            if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
+                newThreads.push(thread);
+            }
+        });
+        ed_storage.courses[courseId].lastTimestamp = Date.now();
+        saveStorageToDisk();
+        return newThreads;
+    } catch (error) {
+        throw new Error(error);
+    }
 }
 
 /*
@@ -239,15 +238,16 @@ you can also access specific threads by GET from https://edstem.org/api/threads/
 albeit the property is called thread rather than threads
 */
 
-export function GetThread(threadId) {
-    return new Promise((resolve, reject) => {
-        try {
-            const response = axios.get(`/threads/${threadId}/threads?limit=30&sort=new`, { headers: { Authorisation: `Bearer ${course_tokens[courseId]}` } });
-            resolve(response.data.thread);
-        } catch (error) {
-            reject(error);
+export async function GetThread(courseId, threadId) {
+    try {
+        const response = await axios.get(`/threads/${threadId}?view=1`, { headers: { 'Authorization': `Bearer ${course_tokens[courseId]}` } });
+        if (response.data.thread.user_id !== 0) {
+            response.data.thread.user = response.data.users[0];
         }
-    })
+        return response.data.thread;
+    } catch (error) {
+        throw new Error(error);
+    }
 }
 
 export function init() {
