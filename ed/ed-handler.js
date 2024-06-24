@@ -1,14 +1,15 @@
 // requiring required packages
 import * as fs from 'fs';
 import * as path from 'path';
-import axios from axios;
+import axios from 'axios';
 import 'dotenv/config';
 
-// reading token from .env file
-
-// const token = process.env.ED_TOKEN;
-const course_tokens = require("./ed-tokens.json");
+// set base URL for axios
 axios.defaults.baseURL = 'https://edstem.org/api/';
+
+// setting dirname
+const __dirname = import.meta.dirname;
+
 /*
 let ed_axios = axios.create({
     baseURL: 'https://edstem.org/api/',
@@ -16,6 +17,10 @@ let ed_axios = axios.create({
     headers: { Authorisation: `Bearer ${token}` },
 });
 */
+
+// load course tokens
+const course_tokens_txt = fs.readFileSync(path.join(__dirname, 'ed-tokens.json'), 'utf-8');
+const course_tokens = JSON.parse(course_tokens_txt);
 
 // ed_storage contains storage info regarding the handler.
 let ed_storage;
@@ -223,7 +228,7 @@ Saves to disk
 
 function saveStorageToDisk() {
     try {
-        fs.writeSync(path.resolve('./ed-storage.json'), JSON.stringify(ed_storage));
+        fs.writeSync(path.join(__dirname, 'ed-storage.json'), JSON.stringify(ed_storage));
     } catch (error) {
         console.error(error);
     }
@@ -245,10 +250,10 @@ export function GetThread(threadId) {
     })
 }
 
-export default function init() {
+export function init() {
     // Get storage file to get latest post IDs. If not found, then create an object to store it in.
     try {
-        ed_storage = fs.readFileSync(path.resolve('ed-storage.json'));
+        ed_storage = fs.readFileSync(path.join(__dirname, 'ed-storage.json'), 'utf-8');
     } catch (error) {
         ed_storage = {
             courses: {},

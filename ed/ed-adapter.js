@@ -1,6 +1,5 @@
-import { init, GetCourses, ReadCourse, GetCourseBindings } from './ed-handler.mjs';
-import { Client, GatewayIntentBits, Collection, Events, EmbedBuilder } from 'discord.js';
-import EdEmbed from './ed-embed.mjs';
+import { init, GetCourses, ReadCourse, GetCourseBindings } from './ed-handler.js';
+import EdEmbed from './ed-embed.js';
 
 class EdAdapter {
     constructor(client) {
