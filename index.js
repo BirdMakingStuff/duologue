@@ -1,24 +1,25 @@
 // Require the necessary discord.js classes
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-const ed_adapter = require('./ed/ed-adapter.mjs');
-const dotenv = require('dotenv');
-dotenv.config();
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
+import ed_adapter from './ed/ed-adapter.js';
+import 'dotenv/config';
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 // Create a new Collection to hold your commands.
 client.commands = new Collection();
-const folderPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(folderPath);
+const __dirname = import.meta.dirname;
+const folderPath = join(__dirname, 'commands');
+const commandFolders = readdirSync(folderPath);
 for (const folder of commandFolders) {
-	const commandsPath = path.join(folderPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	const commandsPath = join(folderPath, folder);
+	const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
+		const filePath = join(commandsPath, file);
+		const { command } = await import(pathToFileURL(filePath));
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command);
 		} else {
