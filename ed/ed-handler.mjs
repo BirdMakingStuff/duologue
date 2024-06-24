@@ -86,6 +86,14 @@ export function ReadUser() {
 }
 
 /*
+Gets a list of courses
+*/
+
+export function GetCourses() {
+    return ed_storage.courses.keys();
+}
+
+/*
 Checks if a course is known
 */
 export function CourseExists(courseId) {
@@ -136,6 +144,7 @@ export function ReadCourse(courseId) {
         }).catch(error => {
             console.error(error);
         });
+    saveStorageToDisk();
 }
 
 /*
@@ -152,12 +161,15 @@ export function BindCourse(courseId, channelId, type) {
                 throw new Error(`Course ${courseId} is already bound to channel ${channelId} for announcements.`);
             }
             ed_storage.announcementBindings[courseId].push(channelId);
+            break;
         case 'normal':
             if (channelId in ed_storage.threadBindings[courseId]) {
                 throw new Error(`Channel ${courseId} is already bound to channel ${channelId} for threads.`);
             }
             ed_storage.threadBindings[courseId].push(channelId);
+            break;
     }
+    saveStorageToDisk();
 }
 
 /*
@@ -171,19 +183,34 @@ export function UnbindCourse(courseId, channelId) {
     if (channelId in ed_storage.threadBindings[courseId]) {
         ed_storage.threadBindings[courseId].splice(ed_storage.threadBindings[courseId].indexOf(channelId), 1);
     }
+    saveStorageToDisk();
 }
 
 /*
 Get current course bindings
 */
 
-export function getCourseBindings(courseId) {
+export function GetCourseBindings(courseId, type) {
     const channelIds = [];
-    for (const channelId in ed_storage.announcementBindings[courseId]) {
-        channelIds.push(channelId);
-    }
-    for (const channelId in ed_storage.threadBindings[courseId]) {
-        channelIds.push(channelId);
+    switch (type) {
+        case 'announcements':
+            for (const channelId in ed_storage.announcementBindings[courseId]) {
+                channelIds.push(channelId);
+            }
+            break;
+        case 'normal':
+            for (const channelId in ed_storage.threadBindings[courseId]) {
+                channelIds.push(channelId);
+            }
+            break;
+        default:
+            for (const channelId in ed_storage.announcementBindings[courseId]) {
+                channelIds.push(channelId);
+            }
+            for (const channelId in ed_storage.threadBindings[courseId]) {
+                channelIds.push(channelId);
+            }
+            break;
     }
     return channelIds;
 }
