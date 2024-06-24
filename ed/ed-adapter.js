@@ -42,7 +42,7 @@ class EdAdapter {
         }
         channel.send({
             content: `**A new ${threadObj.type} has been posted on Ed Discussion**: [${threadObj.title}](${`https://edstem.org/au/courses/${threadObj.course_id}/discussion/${threadObj.id}`})`,
-            embed: EdEmbed(threadObj),
+            embeds: [EdEmbed(threadObj)],
             ephemeral: false,
         });
     }
