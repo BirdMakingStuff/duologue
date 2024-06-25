@@ -2,7 +2,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import axios from 'axios';
-import 'dotenv/config';
 
 // set axios defaults
 axios.defaults.baseURL = 'https://edstem.org/api/';
@@ -64,10 +63,10 @@ export async function ReadUser() {
     const tokens = [];
     for (const [_, token] of Object.entries(course_tokens)) {
         // Only get courses that have not been indexed yet.
-        console.log(`Reading user with token ${token}`);
         if (tokens.indexOf(token) !== -1) {
             continue;
         }
+        console.log(`Reading user with token ${token}`);
         try {
             const response = await axios.get('/user',  { headers: { 'Authorization': `Bearer ${token}` } });
             response.data.courses.forEach(course => {
@@ -147,7 +146,7 @@ export async function ReadCourse(courseId) {
     try {
         const response = await axios.get(`/courses/${courseId}/threads?limit=30&sort=new`, { headers: { 'Authorization': `Bearer ${course_tokens[courseId]}` } });
         const newThreads = [];
-        for (const thread in response.data.threads) {
+        for (const thread of response.data.threads) {
             if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
                 newThreads.push(thread);
                 console.log(`New thread ${thread.id} discovered in course ${courseId}.`)
