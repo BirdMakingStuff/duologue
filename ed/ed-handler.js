@@ -238,6 +238,7 @@ Saves to disk
 function saveStorageToDisk() {
     try {
         fs.writeFileSync(path.join(__dirname, 'ed-storage.json'), JSON.stringify(ed_storage));
+        console.log("saved to storage!");
     } catch (error) {
         console.error(error);
     }
