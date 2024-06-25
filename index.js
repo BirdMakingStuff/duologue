@@ -54,25 +54,9 @@ client.on(Events.InteractionCreate, async interaction => {
 		}
 	}
 });
-
-// Polls the Ed API for new posts.
-/*
-function pollForMessages() {
-	try {
-		ReadUser();
-	} catch (error) {
-		console.error(error);
-	}
-	while (true) {
-		setTimeout(() => {
-			ReadCourse();
-
-		}, 300000);
-	}
-}
-*/
-
 // Log in to Discord with your client's token
 client.login(process.env.DISCORD_TOKEN);
+
+// Polls the Ed API for new posts.
 const ed = new ed_adapter(client);
 ed.poll();

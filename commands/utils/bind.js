@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { BindCourse, CourseExists, GetCourseBindings } from '../../ed/ed-handler.js';
+import { BindCourse, CourseExists, GetCourseBindings, CourseHasToken } from '../../ed/ed-handler.js';
 
 export const command = {
 	data: new SlashCommandBuilder()
@@ -12,7 +12,7 @@ export const command = {
 		const courseId = interaction.options.getInteger('course_id');
 		const threadType = interaction.options.getString('thread_types');
 		const channelId = interaction.channel.id;
-		if (!CourseExists(courseId)) {
+		if (!CourseExists(courseId) || !CourseHasToken(courseId)) {
 			await interaction.reply({ content: `❌ Course with ID ${courseId} is not loaded into the bot.`, ephemeral: true });
 			return;
 		}
