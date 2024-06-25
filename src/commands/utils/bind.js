@@ -25,7 +25,7 @@ export const command = {
 			await interaction.reply({ content: `✅ Course with ID ${courseId} has been bound to this channel successfully!`, ephemeral: false });
 		} catch (error) {
 			console.error(error);
-			await interaction.reply({ content: `❌ An error occurred while binding the course.`, ephemeral: true });
+			await interaction.reply({ content: `🚩 An error occurred while binding the course.`, ephemeral: true });
 		}
 	}
 };

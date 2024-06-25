@@ -170,6 +170,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/dotenv,node,windows
-ed/ed-tokens.json
-ed/ed-storage.json
-commands/utils/allowlist.json
+src/ed/ed-storage.json
+src/ed/ed-tokens.json
