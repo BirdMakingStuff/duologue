@@ -1,5 +1,5 @@
 // Require the necessary discord.js classes
-import { readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
@@ -33,6 +33,10 @@ client.once(Events.ClientReady, readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
+// Load the allowlist
+const allowlistPath = join(__dirname, 'commands', 'utils', 'allowlist.json');
+const allowlistFile = readFileSync(pathToFileURL(allowlistPath), 'utf-8');
+const allowlist = JSON.parse(allowlistFile);
 // Handles client commands
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
@@ -40,6 +44,11 @@ client.on(Events.InteractionCreate, async interaction => {
 
 	if (!command) {
 		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	};
+
+	if (!allowlist.includes(interaction.user.id) && !allowlist.includes(Number(interaction.user.id))) {
+		await interaction.reply({ content: 'You are not allowed to use this command.', ephemeral: true });
 		return;
 	}
 
