@@ -74,7 +74,7 @@ export async function ReadUser() {
                 if (!(course.course.id in ed_storage.courses)) {
                     ed_storage.courses[course.course.id] = {
                         lastTimestamp: Date.parse("1970-01-01T00:00:00Z"),
-                        name: `${course.code}: ${course.name}`
+                        name: `${course.course.code}: ${course.course.name}`
                     };
                     ed_storage.announcementBindings[course.course.id] = [];
                     ed_storage.threadBindings[course.course.id] = [];
@@ -96,11 +96,21 @@ export function GetCourses() {
     return Object.keys(ed_storage.courses);
 }
 
+
 /*
-Checks if a course is known
+Checks if a course exists
 */
+
 export function CourseExists(courseId) {
-    return courseId in course_tokens;
+    return GetCourses().includes(courseId.toString());
+
+}
+
+/*
+Checks if a course has a token
+*/
+export function CourseHasToken(courseId) {
+    return Object.keys(course_tokens).includes(courseId.toString());
 }
 
 /*
@@ -128,20 +138,21 @@ For Lecturer's avatar, goto https://static.au.edusercontent.com/avatars/<avatarI
 
 // Reads course if it has been indexed.
 export async function ReadCourse(courseId) {
-    if (!(courseId in course_tokens)) {
-        throw new Error("Course token not found. Please add it to ed-tokens.");
+    if (!CourseHasToken(courseId)) {
+        throw new Error(`Course token for ${courseId} not found. Please add it to ed-tokens.`);
     }
-    if (!(courseId in ed_storage.courses)) {
-        throw new Error("Course not indexed yet. Please run ReadUser first.")
+    if (!CourseExists(courseId)) {
+        throw new Error("Course ${courseId} not indexed yet. Please run ReadUser first.")
     }
     try {
         const response = await axios.get(`/courses/${courseId}/threads?limit=30&sort=new`, { headers: { 'Authorization': `Bearer ${course_tokens[courseId]}` } });
         const newThreads = [];
-        response.data.threads.forEach(thread => {
+        for (const thread in response.data.threads) {
             if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
                 newThreads.push(thread);
+                console.log(`New thread ${thread.id} discovered in course ${courseId}.`)
             }
-        });
+        }
         ed_storage.courses[courseId].lastTimestamp = Date.now();
         saveStorageToDisk();
         return newThreads;
@@ -155,18 +166,18 @@ Adds course binding to a certain Discord channel.
 */
 
 export function BindCourse(courseId, channelId, type) {
-    if (!CourseExists(courseId)) {
+    if (!CourseHasToken(courseId)) {
         throw new Error(`Course ${courseId} does not exist.`);
     }
     switch(type) {
         case 'announcements':
-            if (channelId in ed_storage.announcementBindings[courseId]) {
+            if (ed_storage.announcementBindings[courseId].includes(channelId)) {
                 throw new Error(`Course ${courseId} is already bound to channel ${channelId} for announcements.`);
             }
             ed_storage.announcementBindings[courseId].push(channelId);
             break;
         case 'normal':
-            if (channelId in ed_storage.threadBindings[courseId]) {
+            if (ed_storage.threadBindings[courseId].includes(channelId)) {
                 throw new Error(`Channel ${courseId} is already bound to channel ${channelId} for threads.`);
             }
             ed_storage.threadBindings[courseId].push(channelId);
@@ -180,13 +191,13 @@ Removes course bindings
 */
 
 export function UnbindCourse(courseId, channelId) {
-    if (!CourseExists(courseId)) {
+    if (!CourseHasToken(courseId)) {
         throw new Error(`Course ${courseId} does not exist.`);
     }
-    if (channelId in ed_storage.announcementBindings[courseId]) {
+    if (ed_storage.announcementBindings[courseId].includes(channelId)) {
         ed_storage.announcementBindings[courseId].splice(ed_storage.announcementBindings[courseId].indexOf(channelId), 1);
     }
-    if (channelId in ed_storage.threadBindings[courseId]) {
+    if (ed_storage.threadBindings[courseId].includes(channelId)) {
         ed_storage.threadBindings[courseId].splice(ed_storage.threadBindings[courseId].indexOf(channelId), 1);
     }
     saveStorageToDisk();
@@ -200,20 +211,20 @@ export function GetCourseBindings(courseId, type) {
     const channelIds = [];
     switch (type) {
         case 'announcements':
-            for (const channelId in ed_storage.announcementBindings[courseId]) {
+            for (const channelId of ed_storage.announcementBindings[courseId]) {
                 channelIds.push(channelId);
             }
             break;
         case 'normal':
-            for (const channelId in ed_storage.threadBindings[courseId]) {
+            for (const channelId of ed_storage.threadBindings[courseId]) {
                 channelIds.push(channelId);
             }
             break;
         default:
-            for (const channelId in ed_storage.announcementBindings[courseId]) {
+            for (const channelId of ed_storage.announcementBindings[courseId]) {
                 channelIds.push(channelId);
             }
-            for (const channelId in ed_storage.threadBindings[courseId]) {
+            for (const channelId of ed_storage.threadBindings[courseId]) {
                 channelIds.push(channelId);
             }
             break;
@@ -227,7 +238,7 @@ Saves to disk
 
 function saveStorageToDisk() {
     try {
-        fs.writeSync(path.join(__dirname, 'ed-storage.json'), JSON.stringify(ed_storage));
+        fs.writeFileSync(path.join(__dirname, 'ed-storage.json'), JSON.stringify(ed_storage));
     } catch (error) {
         console.error(error);
     }
@@ -253,7 +264,8 @@ export async function GetThread(courseId, threadId) {
 export function init() {
     // Get storage file to get latest post IDs. If not found, then create an object to store it in.
     try {
-        ed_storage = fs.readFileSync(path.join(__dirname, 'ed-storage.json'), 'utf-8');
+        const ed_storage_txt = fs.readFileSync(path.join(__dirname, 'ed-storage.json'), 'utf-8');
+        ed_storage = JSON.parse(ed_storage_txt);
     } catch (error) {
         ed_storage = {
             courses: {},

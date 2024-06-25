@@ -1,4 +1,4 @@
-import { init, GetCourses, ReadCourse, GetCourseBindings } from './ed-handler.js';
+import { init, GetCourses, ReadCourse, GetCourseBindings, CourseHasToken } from './ed-handler.js';
 import EdEmbed from './ed-embed.js';
 
 class EdAdapter {
@@ -15,6 +15,11 @@ class EdAdapter {
     poll() {
         setInterval(() => {
             for (const courseId of GetCourses() ) {
+                // Skips courses without tokens
+                if (!CourseHasToken(courseId)) {
+                    continue;
+                }
+                // Reads courses
                 ReadCourse(courseId).then(threads => {
                     for (const thread of threads) {
                         if (thread.user !== null) {
@@ -41,7 +46,7 @@ class EdAdapter {
             return;
         }
         channel.send({
-            content: `**A new ${threadObj.type} has been posted on Ed Discussion**: [${threadObj.title}](${`https://edstem.org/au/courses/${threadObj.course_id}/discussion/${threadObj.id}`})`,
+            content: `**A new ${threadObj.type} has been posted on Ed Discussion:** [${threadObj.title}](${`https://edstem.org/au/courses/${threadObj.course_id}/discussion/${threadObj.id}`})`,
             embeds: [EdEmbed(threadObj)],
             ephemeral: false,
         });
