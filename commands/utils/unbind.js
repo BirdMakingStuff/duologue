@@ -16,7 +16,7 @@ export const command = {
 		}
 		try {
 			UnbindCourse(courseId, channelId);
-			await interaction.reply({ content: `✅ Course with ID ${courseId} has been unbound from this channel successfully!`, ephemeral: true });
+			await interaction.reply({ content: `✅ Course with ID ${courseId} has been unbound from this channel successfully!`, ephemeral: false });
 		} catch (error) {
 			console.error(error);
 			await interaction.reply({ content: `❌ An error occurred while unbinding the course.`, ephemeral: true });
