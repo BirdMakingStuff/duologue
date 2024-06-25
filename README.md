@@ -17,8 +17,6 @@ In the `ed` directory, create a `ed-tokens.json` file. The keys of a file should
 }
 ```
 
-Note that you may have to change
-
 Finally, run the bot with `npm start`.
 
 ## Usage
