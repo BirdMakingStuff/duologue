@@ -20,7 +20,7 @@ export const command = {
 				ephemeral: false });
 		} catch (error) {
 			console.error(error);
-			await interaction.reply({ content: `❌ An error occurred while fetching the thread.`, ephemeral: true });
+			await interaction.reply({ content: `🚩 An error occurred while fetching the thread.`, ephemeral: true });
 		}
 	}
 };

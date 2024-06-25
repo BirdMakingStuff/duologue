@@ -2,7 +2,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits, PermissionsBitField } from 'discord.js';
 import ed_adapter from './ed/ed-adapter.js';
 import 'dotenv/config';
 
@@ -33,10 +33,6 @@ client.once(Events.ClientReady, readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
-// Load the allowlist
-const allowlistPath = join(__dirname, 'commands', 'utils', 'allowlist.json');
-const allowlistFile = readFileSync(pathToFileURL(allowlistPath), 'utf-8');
-const allowlist = JSON.parse(allowlistFile);
 // Handles client commands
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
@@ -47,8 +43,8 @@ client.on(Events.InteractionCreate, async interaction => {
 		return;
 	};
 
-	if (!allowlist.includes(interaction.user.id) && !allowlist.includes(Number(interaction.user.id))) {
-		await interaction.reply({ content: 'You are not allowed to use this command.', ephemeral: true });
+	if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+		await interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
 		return;
 	}
 
@@ -57,9 +53,9 @@ client.on(Events.InteractionCreate, async interaction => {
 	} catch (error) {
 		console.error(error);
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+			await interaction.followUp({ content: '🚩 There was an error while executing this command!', ephemeral: true });
 		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			await interaction.reply({ content: '🚩 There was an error while executing this command!', ephemeral: true });
 		}
 	}
 });

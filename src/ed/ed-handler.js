@@ -47,7 +47,7 @@ to get a list of users, GET request https://edstem.org/api/user
 courses:
 <list of course objects. an example>
 "course": {
-                "id": 15580,
+                "id": 12345,
                 "realm_id": 47,
                 "code": "ENGSCI 211",
                 "name": "Mathematical Modelling 2",
