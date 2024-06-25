@@ -1,5 +1,6 @@
 import { init, GetCourses, ReadCourse, GetCourseBindings, CourseHasToken } from './ed-handler.js';
 import EdEmbed from './ed-embed.js';
+import 'dotenv/config';
 
 class EdAdapter {
     constructor(client) {
@@ -24,19 +25,19 @@ class EdAdapter {
                     for (const thread of threads) {
                         if (thread.user !== null) {
                             if (thread.user.course_role !== 'student') {
-                                for (const channelId in GetCourseBindings(courseId, 'announcements')) {
+                                for (const channelId of GetCourseBindings(courseId, 'announcements')) {
                                     this.postMessage(channelId, thread);
                                 }
                                 continue;
                             }
                         }
-                        for (const channelId in GetCourseBindings(courseId, 'normal')) {
+                        for (const channelId of GetCourseBindings(courseId, 'normal')) {
                             this.postMessage(channelId, thread);
                         }
                     }
                 }).catch(error => console.error(error));    
             }
-        }, 180000);
+        }, process.env.POLLING_INTERVAL);
     }
 
     postMessage(channelId, threadObj) {
@@ -45,11 +46,15 @@ class EdAdapter {
             console.error(`Channel with ID ${channelId} not found.`);
             return;
         }
-        channel.send({
-            content: `**A new ${threadObj.type} has been posted on Ed Discussion:** [${threadObj.title}](${`https://edstem.org/au/courses/${threadObj.course_id}/discussion/${threadObj.id}`})`,
-            embeds: [EdEmbed(threadObj)],
-            ephemeral: false,
-        });
+        try {
+            channel.send({
+                content: `**A new ${threadObj.type} has been posted on Ed Discussion:** [${threadObj.title}](${`https://edstem.org/au/courses/${threadObj.course_id}/discussion/${threadObj.id}`})`,
+                embeds: [EdEmbed(threadObj)],
+                ephemeral: false,
+            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 };
 
