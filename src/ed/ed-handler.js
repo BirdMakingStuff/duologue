@@ -61,12 +61,12 @@ user: describes the logged in user
 
 export async function ReadUser() {
     const tokens = [];
-    for (const [_, token] of Object.entries(course_tokens)) {
+    for (const [tokenCourse, token] of Object.entries(course_tokens)) {
         // Only get courses that have not been indexed yet.
         if (tokens.indexOf(token) !== -1) {
             continue;
         }
-        console.log(`Reading user with token ${token}`);
+        console.log(`Reading token for course ${tokenCourse}`);
         try {
             const response = await axios.get('/user',  { headers: { 'Authorization': `Bearer ${token}` } });
             response.data.courses.forEach(course => {
@@ -102,7 +102,6 @@ Checks if a course exists
 
 export function CourseExists(courseId) {
     return GetCourses().includes(courseId.toString());
-
 }
 
 /*
@@ -267,6 +266,7 @@ export function init() {
         const ed_storage_txt = fs.readFileSync(path.join(__dirname, 'ed-storage.json'), 'utf-8');
         ed_storage = JSON.parse(ed_storage_txt);
     } catch (error) {
+        console.log(error);
         ed_storage = {
             courses: {},
             announcementBindings: {},
