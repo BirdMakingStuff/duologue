@@ -8,7 +8,7 @@ It can also retrieve them when requested by the user.
 
 Create a `.env` file which contains the private key as `DISCORD_TOKEN` and the client ID as `DISCORD_CLIENT_ID`. The polling duration also must be specified as `POLLING_INTERVAL`.
 
-In the `ed` directory, create a `ed-tokens.json` file. The keys of a file should be the course IDs available to be subscribed to, and the values are the Ed API tokens obtained from [Ed Settings](https://edstem.org/au/settings/api-tokens). For example:
+In the `ed` directory, create a `ed-tokens.json` file. The keys of a file should be the course IDs available to be subscribed to (acting as an allowlist of sorts), and the values are the Ed API tokens obtained from [Ed Settings](https://edstem.org/au/settings/api-tokens). For example:
 
 ```json
 {
@@ -20,8 +20,8 @@ In the `ed` directory, create a `ed-tokens.json` file. The keys of a file should
 Finally, run the bot with `npm start`.
 
 ## Usage
-
-Note that you must have the Administrator permission in order to run these commands.
+>[!NOTE]
+>All commands require the Administrator permission.
 
 ### `/ping`
 Returns the ping of the bot.
