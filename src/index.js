@@ -33,6 +33,8 @@ client.once(Events.ClientReady, readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
+
+const ADMIN_ONLY_COMMANDS = new Set(["bind", "unbind"]);
 // Handles client commands
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
@@ -43,7 +45,7 @@ client.on(Events.InteractionCreate, async interaction => {
 		return;
 	};
 
-	if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+	if (ADMIN_ONLY_COMMANDS.has(interaction.commandName) && !interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
 		await interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
 		return;
 	}
