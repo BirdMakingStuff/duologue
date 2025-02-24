@@ -66,7 +66,7 @@ export async function ReadUser() {
         if (tokens.indexOf(token) !== -1) {
             continue;
         }
-        console.log(`Reading token for course ${tokenCourse}`);
+        console.log(`[${(new Date()).toLocaleString()}] Reading token for course ${tokenCourse}`);
         try {
             const response = await axios.get('/user',  { headers: { 'Authorization': `Bearer ${token}` } });
             response.data.courses.forEach(course => {
@@ -77,7 +77,7 @@ export async function ReadUser() {
                     };
                     ed_storage.announcementBindings[course.course.id] = [];
                     ed_storage.threadBindings[course.course.id] = [];
-                    console.log(`indexed course ${course.course.id}: ${course.course.code}: ${course.course.name}`);
+                    console.log(`Indexed course ${course.course.id}: ${course.course.code}: ${course.course.name}`);
                 }
             });
             tokens.push(token);
@@ -148,7 +148,7 @@ export async function ReadCourse(courseId) {
         for (const thread of response.data.threads) {
             if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
                 newThreads.push(thread);
-                console.log(`New thread ${thread.id} discovered in course ${courseId}.`)
+                console.log(`[${(new Date()).toLocaleString()}] New thread ${thread.id} discovered in course ${courseId}.`)
             }
         }
         ed_storage.courses[courseId].lastTimestamp = Date.now();
@@ -237,7 +237,7 @@ Saves to disk
 function saveStorageToDisk() {
     try {
         fs.writeFileSync(path.join(__dirname, 'ed-storage.json'), JSON.stringify(ed_storage));
-        console.log("saved to storage!");
+        console.log(`[${(new Date()).toLocaleString()}] Saved to storage!`);
     } catch (error) {
         console.error(error);
     }
@@ -266,7 +266,7 @@ export function init() {
         const ed_storage_txt = fs.readFileSync(path.join(__dirname, 'ed-storage.json'), 'utf-8');
         ed_storage = JSON.parse(ed_storage_txt);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         ed_storage = {
             courses: {},
             announcementBindings: {},

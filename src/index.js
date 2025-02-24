@@ -23,14 +23,14 @@ for (const folder of commandFolders) {
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command);
 		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+			console.warn(`[${(new Date()).toLocaleString()}] The command at ${filePath} is missing a required "data" or "execute" property.`);
 		}
 	}
 }
 
 // When the client is ready, run this code (only once).
 client.once(Events.ClientReady, readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+	console.log(`[${(new Date()).toLocaleString()}] Ready! Logged in as ${readyClient.user.tag}`);
 });
 
 
