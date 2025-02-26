@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { GetThread } from '../../ed/ed-handler.js';
+import { GetCourseInfo, GetThread } from '../../ed/ed-handler.js';
 import EdEmbed from '../../ed/ed-embed.js';
 
 export const command = {
@@ -13,9 +13,14 @@ export const command = {
 		const courseId = interaction.options.getInteger('course_id');
 		const threadId = interaction.options.getInteger('thread_id');
 		try {
-			let threadObj = await GetThread(courseId, threadId);
+			const courseInfo = GetCourseInfo(courseId);
+			if (!courseInfo) {
+				await interaction.reply({ content: `❌ Course with ID ${courseId} is not loaded into the bot.`, ephemeral: true });
+				return;
+			}
+			const threadObj = await GetThread(courseId, threadId);
 			await interaction.reply({
-				content: `[${threadObj.title}](${`https://edstem.org/au/courses/${threadObj.course_id}/discussion/${threadObj.id}`})`,
+				content: `**[${courseInfo.name}](https://edstem.org/au/courses/${threadObj.course_id}/discussion/):** [${threadObj.title}](${`https://edstem.org/au/courses/${threadObj.course_id}/discussion/${threadObj.id}`})`,
 				embeds: [EdEmbed(threadObj)],
 				ephemeral: false });
 		} catch (error) {

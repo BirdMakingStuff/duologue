@@ -88,31 +88,31 @@ export async function ReadUser() {
 }
 
 /*
-Gets a list of courses
+    Gets a list of course IDs
 */
 
-export function GetCourses() {
+export function GetCourseIds() {
     return Object.keys(ed_storage.courses);
 }
 
 
 /*
-Checks if a course exists
+    Checks if a course exists
 */
 
 export function CourseExists(courseId) {
-    return GetCourses().includes(courseId.toString());
+    return GetCourseIds().includes(courseId.toString());
 }
 
 /*
-Checks if a course has a token
+    Checks if a course has a token
 */
 export function CourseHasToken(courseId) {
     return Object.keys(course_tokens).includes(courseId.toString());
 }
 
 /*
-Gets course info
+    Gets course info
 */
 export function GetCourseInfo(courseId) {
     return ed_storage.courses[courseId];
