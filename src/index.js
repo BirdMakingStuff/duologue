@@ -28,7 +28,7 @@ for (const folder of commandFolders) {
 	}
 }
 
-// When the client is ready, run this code (only once).
+// When the client is ready, run this code
 client.once(Events.ClientReady, readyClient => {
 	console.log(`[${(new Date()).toLocaleString()}] Ready! Logged in as ${readyClient.user.tag}`);
 });

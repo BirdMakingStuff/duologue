@@ -239,7 +239,7 @@ function saveStorageToDisk() {
         fs.writeFileSync(path.join(__dirname, 'ed-storage.json'), JSON.stringify(ed_storage));
         console.log(`[${(new Date()).toLocaleString()}] Saved to storage!`);
     } catch (error) {
-        console.error(error);
+        console.error(console.error(`[${(new Date()).toLocaleString()}] ${error}`));
     }
 }
 
@@ -266,7 +266,7 @@ export function init() {
         const ed_storage_txt = fs.readFileSync(path.join(__dirname, 'ed-storage.json'), 'utf-8');
         ed_storage = JSON.parse(ed_storage_txt);
     } catch (error) {
-        console.error(error);
+        console.error(console.error(`[${(new Date()).toLocaleString()}] ${error}`));
         ed_storage = {
             courses: {},
             announcementBindings: {},
