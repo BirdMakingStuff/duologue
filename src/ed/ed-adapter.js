@@ -43,7 +43,7 @@ class EdAdapter {
     postMessage(channelId, threadObj) {
         const channel = this.discordClient.channels.cache.get(channelId);
         if (!channel) {
-            console.error(`Channel with ID ${channelId} not found.`);
+            console.error(`${(new Date()).toLocaleString()} Channel with ID ${channelId} not found.`);
             return;
         }
         try {
@@ -53,7 +53,7 @@ class EdAdapter {
                 ephemeral: false,
             });
         } catch (error) {
-            console.error(error);
+            console.error(`${(new Date()).toLocaleString()} ${error}`);
         }
     }
 };

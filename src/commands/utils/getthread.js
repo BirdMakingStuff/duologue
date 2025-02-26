@@ -19,7 +19,7 @@ export const command = {
 				embeds: [EdEmbed(threadObj)],
 				ephemeral: false });
 		} catch (error) {
-			console.error(error);
+			console.error(`${(new Date()).toLocaleString()} ${error}`);
 			await interaction.reply({ content: `🚩 An error occurred while fetching the thread.`, ephemeral: true });
 		}
 	}
