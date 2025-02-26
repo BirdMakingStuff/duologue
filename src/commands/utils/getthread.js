@@ -14,7 +14,7 @@ export const command = {
 		const threadId = interaction.options.getInteger('thread_id');
 		try {
 			const courseInfo = GetCourseInfo(courseId);
-			if (!courseInfo) {
+			if (!courseInfo || courseInfo.lastTimestamp === 0) {
 				await interaction.reply({ content: `❌ Course with ID ${courseId} is not loaded into the bot.`, ephemeral: true });
 				return;
 			}
