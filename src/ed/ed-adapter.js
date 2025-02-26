@@ -1,4 +1,4 @@
-import { init, GetCourses, ReadCourse, GetCourseBindings, CourseHasToken } from './ed-handler.js';
+import { init, GetCourseIds, ReadCourse, GetCourseBindings, CourseHasToken } from './ed-handler.js';
 import EdEmbed from './ed-embed.js';
 import 'dotenv/config';
 
@@ -15,7 +15,7 @@ class EdAdapter {
     
     poll() {
         setInterval(() => {
-            for (const courseId of GetCourses() ) {
+            for (const courseId of GetCourseIds() ) {
                 // Skips courses without tokens
                 if (!CourseHasToken(courseId)) {
                     continue;
