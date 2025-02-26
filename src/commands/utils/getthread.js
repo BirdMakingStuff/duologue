@@ -20,7 +20,7 @@ export const command = {
 			}
 			const threadObj = await GetThread(courseId, threadId);
 			await interaction.reply({
-				content: `**[[${courseInfo.name}](https://edstem.org/au/courses/${threadObj.course_id}/discussion/)]:** [${threadObj.title}](${`https://edstem.org/au/courses/${threadObj.course_id}/discussion/${threadObj.id}`})`,
+				content: `**[[${courseInfo.name}]:](https://edstem.org/au/courses/${threadObj.course_id}/discussion/)** [${threadObj.title}](${`https://edstem.org/au/courses/${threadObj.course_id}/discussion/${threadObj.id}`})`,
 				embeds: [EdEmbed(threadObj)],
 				ephemeral: false });
 		} catch (error) {
