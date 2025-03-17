@@ -252,7 +252,15 @@ export async function GetThread(courseId, threadId) {
     try {
         const response = await axios.get(`/threads/${threadId}?view=1`, { headers: { 'Authorization': `Bearer ${course_tokens[courseId]}` } });
         if (response.data.thread.user_id !== 0) {
-            response.data.thread.user = response.data.users[0];
+            const userMap = Map();
+            for (const user of response.data.users) {
+                userMap.set(user.id, user);
+            }
+            if (userMap.has(response.data.thread.user_id)) {
+                response.data.thread.user = userMap.get(response.data.thread.user_id);
+            } else {
+                response.data.thread.user = response.data.users[0];
+            }
         }
         return response.data.thread;
     } catch (error) {
