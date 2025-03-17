@@ -252,7 +252,7 @@ export async function GetThread(courseId, threadId) {
     try {
         const response = await axios.get(`/threads/${threadId}?view=1`, { headers: { 'Authorization': `Bearer ${course_tokens[courseId]}` } });
         if (response.data.thread.user_id !== 0) {
-            const userMap = Map();
+            const userMap = new Map();
             for (const user of response.data.users) {
                 userMap.set(user.id, user);
             }
