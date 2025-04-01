@@ -147,8 +147,12 @@ export async function ReadCourse(courseId) {
         const newThreads = [];
         for (const thread of response.data.threads) {
             if (Date.parse(thread.created_at) > ed_storage.courses[courseId].lastTimestamp) {
-                newThreads.push(thread);
-                console.log(`[${(new Date()).toLocaleString()}] New thread ${thread.id} discovered in course ${courseId}.`)
+                console.log(`[${(new Date()).toLocaleString()}] New thread ${thread.id} discovered in course ${courseId}.`);
+                if (thread.is_private) {
+                    console.log("Thread private, not included for dispatch...");
+                } else {
+                    newThreads.push(thread);
+                }
             }
         }
         ed_storage.courses[courseId].lastTimestamp = Date.now();
