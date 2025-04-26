@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "commands": "node src/deploy-commands"
+    "commands": "node src/deploy-commands",
+    "pm2-start": "pm2 src/index.js -i 0 --name duologue"
   },
   "keywords": [],
   "author": "@BirdMakingStuff",
