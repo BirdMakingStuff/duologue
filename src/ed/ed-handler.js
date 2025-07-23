@@ -157,7 +157,7 @@ export async function ReadCourse(courseId) {
         }
         ed_storage.courses[courseId].lastTimestamp = Date.now();
         saveStorageToDisk();
-        return newThreads;
+        return newThreads.reverse(); // reverse to get the oldest threads first
     } catch (error) {
         throw new Error(error);
     }
