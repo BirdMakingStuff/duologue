@@ -6,7 +6,9 @@ It can also retrieve them when requested by the user.
 ## Installation
 [Create a new Discord application and bot and obtain it's private key and client ID.](https://discord.com/developers/applications)
 
-Create a `.env` file which contains the private key as `DISCORD_TOKEN` and the client ID as `DISCORD_CLIENT_ID`. The polling duration also must be specified as `POLLING_INTERVAL`.
+Create a `.env` file which contains the private key as `DISCORD_TOKEN` and the client ID as `DISCORD_CLIENT_ID`. The polling duration also must be specified as `POLLING_INTERVAL` (in milliseconds).
+>[!NOTE]
+>The polling interval specified here is the polling interval controlled by Duologue. If another application such as PM2 is controlling Duologue's execution behaviour, the polling interval may not line up.
 
 In the `ed` directory, create a `ed-tokens.json` file. The keys of a file should be the course IDs available to be subscribed to (acting as an allowlist of sorts), and the values are the Ed API tokens obtained from [Ed Settings](https://edstem.org/au/settings/api-tokens). For example:
 
@@ -17,7 +19,12 @@ In the `ed` directory, create a `ed-tokens.json` file. The keys of a file should
 }
 ```
 
-Finally, run the bot with `npm start`.
+Additionally, you will also need to register commands with Discord using `npm run commands`. You will only need to do this process if the commands that Duologue provides changes.
+
+Finally, run the bot with `npm run start`.
+
+>[!NOTE]
+>If you re using pm2, you can use `pm2-start` instead.
 
 ## Usage
 
