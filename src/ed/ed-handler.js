@@ -155,9 +155,11 @@ export async function ReadCourse(courseId) {
                 }
             }
         }
+        // sort newThreads based on the created_at property (oldest first)
+        newThreads.sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
         ed_storage.courses[courseId].lastTimestamp = Date.now();
         saveStorageToDisk();
-        return newThreads.reverse(); // reverse to get the oldest threads first
+        return newThreads;
     } catch (error) {
         throw new Error(error);
     }
