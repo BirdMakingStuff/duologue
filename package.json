@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "A Discord bot which interfaces with Ed Discussion",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "commands": "node src/deploy-commands",
-    "pm2-start": "pm2 start src/index.js -i 0 --name duologue"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:dev": "ts-node --esm src/index.ts",
+    "commands": "node dist/deploy-commands.js",
+    "commands:dev": "ts-node --esm src/deploy-commands.ts",
+    "pm2-start": "pm2 start dist/index.js -i 0 --name duologue"
   },
   "keywords": [],
   "author": "@BirdMakingStuff",
@@ -18,6 +21,9 @@
     "dotenv": "^16.5.0"
   },
   "devDependencies": {
-    "eslint": "^9.28.0"
+    "@types/node": "^22.9.3",
+    "eslint": "^9.28.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }
