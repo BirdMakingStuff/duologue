@@ -99,6 +99,22 @@ let edStorage: EdStorage = {
     threadBindings: {},
 };
 
+// ED_COURSES: comma-separated list of numerical course IDs to whitelist.
+// If missing or empty, the whitelist is empty and no courses are allowed.
+function parseCourseWhitelist(): Set<string> {
+    const raw = process.env.ED_COURSES ?? '';
+    const parts = raw.split(',')
+        .map(p => p.trim())
+        .filter(p => p.length > 0 && /^\d+$/.test(p));
+    return new Set(parts);
+}
+
+const courseWhitelist: Set<string> = parseCourseWhitelist();
+
+export function IsCourseWhitelisted(courseId: number | string): boolean {
+    return courseWhitelist.has(courseId.toString());
+}
+
 function loadStorageFromDisk(): void {
     try {
         const stored = fs.readFileSync(storagePath, 'utf-8');
@@ -157,6 +173,11 @@ export async function ReadUser(): Promise<void> {
         try {
             const response = await axios.get<UserCourseResponse>('/user', { headers: { Authorization: `Bearer ${token}` } });
             response.data.courses.forEach(course => {
+                // if not in whitelist, skip loading course
+                if (!courseWhitelist.has(course.course.id.toString())) {
+                    return;
+                }
+
                 if (!(course.course.id in edStorage.courses)) {
                     edStorage.courses[course.course.id] = {
                         lastTimestamp: Date.parse('1970-01-01T00:00:00Z'),
@@ -166,7 +187,7 @@ export async function ReadUser(): Promise<void> {
                     edStorage.threadBindings[course.course.id] = [];
                     console.log(`Indexed course ${course.course.id}: ${course.course.code}: ${course.course.name}`);
                 }
-                courseTokens.set(course.course.id.toString(), token) ;
+                courseTokens.set(course.course.id.toString(), token);
             });
         } catch (error) {
             throw new Error(String(error));
@@ -179,7 +200,7 @@ export async function ReadUser(): Promise<void> {
 */
 
 export function GetCourseIds(): string[] {
-    return Object.keys(edStorage.courses);
+    return Array.from(courseWhitelist);
 }
 
 
@@ -188,14 +209,14 @@ export function GetCourseIds(): string[] {
 */
 
 export function CourseExists(courseId: number | string): boolean {
-    return GetCourseIds().includes(courseId.toString());
+    return courseId.toString() in edStorage.courses;
 }
 
 /*
     Checks if a course has a token
 */
 export function CourseHasToken(courseId: number | string): boolean {
-    return Object.keys(courseTokens).includes(courseId.toString());
+    return courseTokens.has(courseId.toString());
 }
 
 /*
@@ -360,7 +381,13 @@ albeit the property is called thread rather than threads
 */
 
 export async function GetThread(courseId: number | string, threadId: number | string): Promise<Thread> {
-    const token = courseTokens[courseId.toString()];
+    if (!IsCourseWhitelisted(courseId)) {
+        throw new Error(`Course ${courseId} is not whitelisted.`);
+    }
+    const token = courseTokens.get(courseId.toString());
+    if (!token) {
+        throw new Error(`Course token for ${courseId} not found. Please add it to ed-tokens.`);
+    }
     try {
         const response = await axios.get<ThreadResponse>(`/threads/${threadId}?view=1`, { headers: { Authorization: `Bearer ${token}` } });
         if (response.data.thread.user_id !== 0) {

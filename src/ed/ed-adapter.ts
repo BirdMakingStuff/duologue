@@ -1,5 +1,5 @@
 import { Client, TextBasedChannel } from 'discord.js';
-import { init, GetCourseIds, ReadCourse, GetCourseBindings, CourseHasToken, Thread } from './ed-handler.js';
+import { init, GetCourseIds, ReadCourse, GetCourseBindings, CourseHasToken, IsCourseWhitelisted, Thread } from './ed-handler.js';
 import EdEmbed from './ed-embed.js';
 import 'dotenv/config';
 
@@ -21,6 +21,9 @@ class EdAdapter {
     poll(): void {
         setInterval(() => {
             for (const courseId of GetCourseIds()) {
+                if (!IsCourseWhitelisted(courseId)) {
+                    continue;
+                }
                 if (!CourseHasToken(courseId)) {
                     continue;
                 }
