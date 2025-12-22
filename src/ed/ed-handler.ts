@@ -3,8 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import axios from 'axios';
 
-type CourseTokenMap = Record<string, string>;
-
 type ThreadType = 'question' | 'post' | 'announcement' | string;
 
 interface ThreadUser {
@@ -70,20 +68,6 @@ function resolveFirstExisting(candidates: Array<string | undefined>): string | u
     return undefined;
 }
 
-function resolveTokenPath(): string {
-    const candidates = [
-        process.env.ED_TOKENS_PATH ? path.resolve(process.env.ED_TOKENS_PATH) : undefined,
-        path.join(projectRoot, 'src/ed/ed-tokens.json'),
-        path.join(projectRoot, 'ed-tokens.json'),
-        path.join(__dirname, 'ed-tokens.json'),
-    ];
-    const resolved = resolveFirstExisting(candidates);
-    if (!resolved) {
-        throw new Error('Unable to locate ed-tokens.json. Set ED_TOKENS_PATH or place the file in src/ed.');
-    }
-    return resolved;
-}
-
 function resolveStoragePath(): string {
     const preferred = process.env.ED_STORAGE_PATH ? path.resolve(process.env.ED_STORAGE_PATH) : undefined;
     const existing = resolveFirstExisting([
@@ -98,8 +82,15 @@ function resolveStoragePath(): string {
     return existing ?? path.join(projectRoot, 'data/ed-storage.json');
 }
 
-const tokenPath = resolveTokenPath();
-const courseTokens: CourseTokenMap = JSON.parse(fs.readFileSync(tokenPath, 'utf-8'));
+function getTokens(): string[] {
+    if (process.env.ED_TOKENS) {
+        const tokens = process.env.ED_TOKENS.split(',').map(t => t.trim()).filter((str) => str.length > 0);
+        return tokens;
+    }
+    throw new Error("Unable to load course tokens. Please set the ED_TOKENS environment variable.");
+}
+
+const courseTokens: Map<string, string> = new Map();
 const storagePath = resolveStoragePath();
 
 let edStorage: EdStorage = {
@@ -161,12 +152,8 @@ user: describes the logged in user
 */
 
 export async function ReadUser(): Promise<void> {
-    const tokens: string[] = [];
-    for (const [tokenCourse, token] of Object.entries(courseTokens)) {
-        if (tokens.includes(token)) {
-            continue;
-        }
-        console.log(`[${(new Date()).toLocaleString()}] Reading token for course ${tokenCourse}`);
+    const tokens: string[] = getTokens();
+    for (const token of tokens) {
         try {
             const response = await axios.get<UserCourseResponse>('/user', { headers: { Authorization: `Bearer ${token}` } });
             response.data.courses.forEach(course => {
@@ -179,8 +166,8 @@ export async function ReadUser(): Promise<void> {
                     edStorage.threadBindings[course.course.id] = [];
                     console.log(`Indexed course ${course.course.id}: ${course.course.code}: ${course.course.name}`);
                 }
+                courseTokens.set(course.course.id.toString(), token) ;
             });
-            tokens.push(token);
         } catch (error) {
             throw new Error(String(error));
         }
@@ -242,7 +229,8 @@ export async function ReadCourse(courseId: number | string): Promise<Thread[]> {
     if (!CourseExists(courseId)) {
         throw new Error(`Course ${courseId} not indexed yet. Please run ReadUser first.`);
     }
-    const token = courseTokens[courseId.toString()];
+    courseId = courseId.toString();
+    const token = courseTokens.get(courseId);
     try {
         const response = await axios.get<ThreadsResponse>(`/courses/${courseId}/threads?limit=30&sort=new`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -250,7 +238,7 @@ export async function ReadCourse(courseId: number | string): Promise<Thread[]> {
         const newThreads: Thread[] = [];
         for (const thread of response.data.threads) {
             const createdAt = Date.parse(thread.created_at);
-            if (createdAt > edStorage.courses[courseId.toString()].lastTimestamp) {
+            if (createdAt > edStorage.courses[courseId].lastTimestamp) {
                 console.log(`[${(new Date()).toLocaleString()}] New thread ${thread.id} discovered in course ${courseId}.`);
                 if (thread.is_private) {
                     console.log('Thread private, not included for dispatch...');
