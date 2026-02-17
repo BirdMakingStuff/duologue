@@ -1,10 +1,12 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { Client, Collection, Events, GatewayIntentBits, PermissionsBitField } from 'discord.js';
+import { load as tomlLoad } from 'js-toml'
 import EdAdapter from './ed/ed-adapter.js';
 import type { ChatCommand } from './types/command.js';
 import 'dotenv/config';
+import { config } from 'dotenv';
 
 type CommandModule = { command: ChatCommand };
 
@@ -66,7 +68,17 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
-const discordToken = process.env.DISCORD_TOKEN;
+// load config.toml
+const configTomlPath = join(__dirname, '..', 'config.toml');
+if (!existsSync(configTomlPath)) {
+	console.error(`[${(new Date()).toLocaleString()}] config.toml not found at ${configTomlPath}`);
+	process.exit(1);
+}
+const configRaw = readFileSync(configTomlPath, 'utf8');
+export const CONFIG = tomlLoad(configRaw);
+console.log(`[${(new Date()).toLocaleString()}] Loaded config.toml.`);
+
+const discordToken = CONFIG["Discord"].token;
 if (!discordToken) {
 	throw new Error('DISCORD_TOKEN is not set.');
 }

@@ -3,6 +3,7 @@ import { readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { config } from 'dotenv';
+import { CONFIG } from './index.js';
 config();
 
 type CommandModule = {
@@ -31,8 +32,8 @@ for (const folder of commandFolders) {
 	}
 }
 
-const discordToken = process.env.DISCORD_TOKEN;
-const clientId = process.env.DISCORD_CLIENT_ID;
+const discordToken = CONFIG["Discord"].token;
+const clientId = CONFIG["Discord"].client_id;
 if (!discordToken || !clientId) {
 	throw new Error('DISCORD_TOKEN and DISCORD_CLIENT_ID must be set to deploy commands.');
 }

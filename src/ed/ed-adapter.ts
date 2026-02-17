@@ -1,7 +1,8 @@
-import { Client, TextBasedChannel } from 'discord.js';
+import { Client } from 'discord.js';
 import { init, GetCourseIds, ReadCourse, GetCourseBindings, CourseHasToken, IsCourseWhitelisted, Thread } from './ed-handler.js';
 import EdEmbed from './ed-embed.js';
 import 'dotenv/config';
+import { CONFIG } from '../index.js';
 
 class EdAdapter {
     private readonly discordClient: Client;
@@ -9,7 +10,7 @@ class EdAdapter {
 
     constructor(client: Client) {
         this.discordClient = client;
-        const configuredInterval = Number(process.env.POLLING_INTERVAL ?? 60000);
+        const configuredInterval = Number(CONFIG["Behaviour"].polling_interval ?? 60000);
         this.pollingIntervalMs = Number.isNaN(configuredInterval) ? 60000 : configuredInterval;
         try {
             init();

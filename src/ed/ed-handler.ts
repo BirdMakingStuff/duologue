@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import axios from 'axios';
+import { CONFIG } from '../index.js';
 
 type ThreadType = 'question' | 'post' | 'announcement' | string;
 
@@ -83,8 +84,11 @@ function resolveStoragePath(): string {
 }
 
 function getTokens(): string[] {
-    if (process.env.ED_TOKENS) {
-        const tokens = process.env.ED_TOKENS.split(',').map(t => t.trim()).filter((str) => str.length > 0);
+    if (CONFIG["EdDiscussion"].tokens) {
+        const tokens = CONFIG["EdDiscussion"].tokens;
+        if (!Array.isArray(tokens)) {
+            throw new Error("ED_TOKENS must be an array.");
+        }
         return tokens;
     }
     throw new Error("Unable to load course tokens. Please set the ED_TOKENS environment variable.");
