@@ -6,10 +6,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "start:dev": "node --loader ts-node/esm src/index.ts",
-    "commands": "node dist/deploy-commands.js",
-    "commands:dev": "node --loader ts-node/esm src/deploy-commands.ts",
+    "start": "bun dist/index.js",
+    "start:dev": "bun src/index.ts",
+    "commands": "bun dist/deploy-commands.js",
+    "commands:dev": "bun src/deploy-commands.ts",
     "pm2-start": "pm2 start dist/index.js -i 0 --name duologue"
   },
   "keywords": [],
