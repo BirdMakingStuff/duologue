@@ -1,0 +1,10 @@
+[Discord]
+token = ""
+client_id = ""
+
+[Behaviour]
+polling_interval = 6000
+
+[EdDiscussion]
+allowed_courses = []
+tokens = []
