@@ -1,0 +1,12 @@
+services:
+  duologue:
+    image: duologue:latest
+    build:
+      context: .
+      target: release
+    ports:
+      - "3000:3000"
+    volumes:
+      # TODO later: change this to not read from current dir but maybe from opt instead
+      - ./config.toml:/usr/src/app/config.toml:ro
+    restart: unless-stopped
