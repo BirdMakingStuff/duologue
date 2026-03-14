@@ -1,0 +1,15 @@
+services:
+  duologue:
+    image: duologue:dev
+    build:
+      context: .
+      target: release
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config.toml:/usr/src/app/config.toml:ro
+      - duologue-data:/usr/src/app/data
+    restart: unless-stopped
+
+volumes:
+  duologue-data:
