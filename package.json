@@ -8,9 +8,7 @@
     "build": "tsc",
     "start": "bun dist/index.js",
     "start:dev": "bun src/index.ts",
-    "commands": "bun dist/deploy-commands.js",
-    "commands:dev": "bun src/deploy-commands.ts",
-    "pm2-start": "pm2 start dist/index.js -i 0 --name duologue"
+    "commands": "bun src/deploy-commands.ts"
   },
   "keywords": [],
   "author": "@BirdMakingStuff",

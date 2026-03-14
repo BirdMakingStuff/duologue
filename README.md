@@ -3,43 +3,40 @@
 Duologue sends posts and questions posted on Ed Discussion as a Discord message when they are posted.
 It can also retrieve them when requested by the user.
 
->[!CAUTION]
->This branch contains the v2 release of Duologue, which is currently in development.
+> [!CAUTION]
+> This branch contains the v2 release of Duologue, which is currently in development.
 
->[!CAUTION]
->The following notes are written for the v1 version of Duologue.
+> [!CAUTION]
+> The following notes are written for the v1 version of Duologue.
 
 ## Installation
-[Create a new Discord application and bot and obtain it's private key and client ID.](https://discord.com/developers/applications)
 
-Create a `.env` file which contains the private key as `DISCORD_TOKEN` and the client ID as `DISCORD_CLIENT_ID`. The polling duration also must be specified as `POLLING_INTERVAL` (in milliseconds).
->[!NOTE]
->The polling interval specified here is the polling interval controlled by Duologue. If another application such as PM2 is controlling Duologue's execution behaviour, the polling interval may not line up.
+[Create a new Discord application and bot and obtain its bot token and client ID.](https://discord.com/developers/applications)
 
-In the `ed` directory, create a `ed-tokens.json` file. The keys of a file should be the course IDs available to be subscribed to (acting as an allowlist of sorts), and the values are the Ed API tokens obtained from [Ed Settings](https://edstem.org/au/settings/api-tokens). For example:
+Copy `config.toml.example` to `config.toml`, then fill in the required fields.
 
-```json
-{
-    "12345": "<YOUR_ED_API_TOKEN_HERE>",
-    "12346": "<YOUR_ED_API_TOKEN_HERE>",
-}
+To run in development (build locally): "commands": "bun dist/deploy-commands.js",
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
 ```
 
-Additionally, you will also need to register commands with Discord using `npm run commands`. You will only need to do this process if the commands that Duologue provides changes.
+To run in production (pull from GitHub Container Registry):
 
-Finally, run the bot with `npm run start`.
-
->[!NOTE]
->If you re using pm2, you can use `pm2-start` instead.
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
 
 ## Usage
 
 ### `/ping`
+
 Returns the ping of the bot.
 
 ### `/bind [course_id] [thread_type]`
->[!NOTE]
->This command requires the Administrator permission.
+
+> [!NOTE]
+> This command requires the Administrator permission.
 
 Binds the course with the given course ID to the channel which the command is run in.
 
@@ -48,8 +45,9 @@ Binds the course with the given course ID to the channel which the command is ru
 **[thread_type]:** The type of thread that the channel should be subscribed to: announcements (threads created by instructors) or normal (all other threads). Channels can be subscribed to both (you will have to run the command twice but change this parameter)
 
 ### `/unbind [course_id]`
->[!NOTE]
->This command requires the Administrator permission.
+
+> [!NOTE]
+> This command requires the Administrator permission.
 
 Unbinds the course with the given course ID from the channel which the command is run in. Note that for channels subscribed to both thread types, this will unsubscribe from both types.
 

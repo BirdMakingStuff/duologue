@@ -1,7 +1,9 @@
 services:
   duologue:
-    image: ghcr.io/birdmakingstuff/duologue:latest
-    pull_policy: always
+    image: duologue:dev
+    build:
+      context: .
+      target: release
     ports:
       - "3000:3000"
     volumes:
