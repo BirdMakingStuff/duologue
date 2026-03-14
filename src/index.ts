@@ -1,7 +1,7 @@
 import { readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { Client, Collection, Events, GatewayIntentBits, PermissionsBitField } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits, MessageFlags, PermissionsBitField } from 'discord.js';
 import EdAdapter from './ed/ed-adapter.js';
 import type { ChatCommand } from './types/command.js';
 import 'dotenv/config';
@@ -51,7 +51,7 @@ client.on(Events.InteractionCreate, async interaction => {
 
 	const lacksAdminPermissions = ADMIN_ONLY_COMMANDS.has(interaction.commandName) && (!interaction.inGuild() || !interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator));
 	if (lacksAdminPermissions) {
-		await interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
+		await interaction.reply({ content: '❌ You do not have permission to use this command.', flags: MessageFlags.Ephemeral });
 		return;
 	}
 
@@ -60,9 +60,9 @@ client.on(Events.InteractionCreate, async interaction => {
 	} catch (error) {
 		console.error(error);
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: '🚩 There was an error while executing this command!', ephemeral: true });
+			await interaction.followUp({ content: '🚩 There was an error while executing this command!', flags: MessageFlags.Ephemeral });
 		} else {
-			await interaction.reply({ content: '🚩 There was an error while executing this command!', ephemeral: true });
+			await interaction.reply({ content: '🚩 There was an error while executing this command!', flags: MessageFlags.Ephemeral });
 		}
 	}
 });

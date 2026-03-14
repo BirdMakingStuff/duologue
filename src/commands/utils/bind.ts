@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { BindCourse, CourseExists, GetCourseBindings, CourseHasToken } from '../../ed/ed-handler.js';
 import type { ChatCommand } from '../../types/command.js';
 
@@ -16,25 +16,25 @@ export const command: ChatCommand = {
 		const threadType = interaction.options.getString('thread_types') as ThreadBindingType | null;
 
 		if (!courseId || !threadType) {
-			await interaction.reply({ content: '❌ Invalid course or thread type provided.', ephemeral: true });
+			await interaction.reply({ content: '❌ Invalid course or thread type provided.', flags: MessageFlags.Ephemeral });
 			return;
 		}
 
 		const channelId = interaction.channelId;
 		if (!CourseExists(courseId) || !CourseHasToken(courseId)) {
-			await interaction.reply({ content: `❌ Course with ID ${courseId} is not loaded into the bot.`, ephemeral: true });
+			await interaction.reply({ content: `❌ Course with ID ${courseId} is not loaded into the bot.`, flags: MessageFlags.Ephemeral });
 			return;
 		}
 		if (GetCourseBindings(courseId, threadType).includes(channelId)) {
-			await interaction.reply({ content: `❌ Course with ID ${courseId} is already bound to this channel.`, ephemeral: true });
+			await interaction.reply({ content: `❌ Course with ID ${courseId} is already bound to this channel.`, flags: MessageFlags.Ephemeral });
 			return;
 		}
 		try {
 			BindCourse(courseId, channelId, threadType);
-			await interaction.reply({ content: `✅ Course with ID ${courseId} has been bound to this channel successfully!`, ephemeral: false });
+			await interaction.reply({ content: `✅ Course with ID ${courseId} has been bound to this channel successfully!` });
 		} catch (error) {
 			console.error(`[${(new Date()).toLocaleString()}] ${error}`);
-			await interaction.reply({ content: '🚩 An error occurred while binding the course.', ephemeral: true });
+			await interaction.reply({ content: '🚩 An error occurred while binding the course.', flags: MessageFlags.Ephemeral });
 		}
 	},
 };
