@@ -174,3 +174,5 @@ src/ed/ed-storage.json
 src/ed/ed-tokens.json
 
 config.toml
+
+data/**

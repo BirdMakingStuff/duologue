@@ -2,7 +2,7 @@ import { Client } from 'discord.js';
 import { init, GetCourseIds, ReadCourse, GetCourseBindings, CourseHasToken, IsCourseWhitelisted, Thread } from './ed-handler.js';
 import EdEmbed from './ed-embed.js';
 import 'dotenv/config';
-import { CONFIG } from '../index.js';
+import { CONFIG } from '../config.js';
 
 class EdAdapter {
     private readonly discordClient: Client;

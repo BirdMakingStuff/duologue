@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import axios from 'axios';
-import { CONFIG } from '../index.js';
+import { CONFIG } from '../config.js';
 
 type ThreadType = 'question' | 'post' | 'announcement' | string;
 
@@ -70,16 +70,11 @@ function resolveFirstExisting(candidates: Array<string | undefined>): string | u
 }
 
 function resolveStoragePath(): string {
-    const preferred = process.env.ED_STORAGE_PATH ? path.resolve(process.env.ED_STORAGE_PATH) : undefined;
     const existing = resolveFirstExisting([
-        preferred,
         path.join(projectRoot, 'data/ed-storage.json'),
         path.join(projectRoot, 'src/ed/ed-storage.json'),
         path.join(__dirname, 'ed-storage.json'),
     ]);
-    if (preferred) {
-        return preferred;
-    }
     return existing ?? path.join(projectRoot, 'data/ed-storage.json');
 }
 
@@ -106,10 +101,16 @@ let edStorage: EdStorage = {
 // ED_COURSES: comma-separated list of numerical course IDs to whitelist.
 // If missing or empty, the whitelist is empty and no courses are allowed.
 function parseCourseWhitelist(): Set<string> {
-    const raw = process.env.ED_COURSES ?? '';
-    const parts = raw.split(',')
-        .map(p => p.trim())
-        .filter(p => p.length > 0 && /^\d+$/.test(p));
+    let rawList = CONFIG["EdDiscussion"].allowed_courses;
+    rawList = rawList.map((id: any) => id.toString().trim()).filter((id: string) => id !== '');
+    const parts = new Set<string>();
+    for (const id of rawList) {
+        if (!/^\d+$/.test(id)) {
+            console.warn(`Invalid course ID in whitelist: "${id}". Skipping.`);
+            continue;
+        }
+        parts.add(id);
+    }
     return new Set(parts);
 }
 
