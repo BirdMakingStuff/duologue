@@ -3,7 +3,7 @@ import { readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { config } from 'dotenv';
-import { CONFIG } from './index.js';
+import { CONFIG } from './config.js';
 config();
 
 type CommandModule = {

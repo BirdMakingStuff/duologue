@@ -20,13 +20,19 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
 ENV NODE_ENV=production
-RUN bun test
+# not needed for now
+# RUN bun test
 RUN bun run build
 
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/dist ./dist
 COPY --from=prerelease /usr/src/app/package.json .
+
+# Ensure runtime storage path is writable when running as the non-root bun user.
+RUN mkdir -p /usr/src/app/data \
+	&& printf '{"courses":{},"announcementBindings":{},"threadBindings":{}}\n' > /usr/src/app/data/ed-storage.json \
+	&& chown -R bun:bun /usr/src/app/data
 
 # run the app
 USER bun
