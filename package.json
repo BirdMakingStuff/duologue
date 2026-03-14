@@ -1,6 +1,6 @@
 {
   "name": "duologue-bot",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A Discord bot which interfaces with Ed Discussion",
   "type": "module",
   "main": "dist/index.js",
