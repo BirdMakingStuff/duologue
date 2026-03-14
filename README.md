@@ -3,12 +3,6 @@
 Duologue sends posts and questions posted on Ed Discussion as a Discord message when they are posted.
 It can also retrieve them when requested by the user.
 
-> [!CAUTION]
-> This branch contains the v2 release of Duologue, which is currently in development.
-
-> [!CAUTION]
-> The following notes are written for the v1 version of Duologue.
-
 ## Installation
 
 [Create a new Discord application and bot and obtain its bot token and client ID.](https://discord.com/developers/applications)
