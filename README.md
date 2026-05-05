@@ -9,7 +9,7 @@ It can also retrieve them when requested by the user.
 
 Copy `config.toml.example` to `config.toml`, then fill in the required fields.
 
-To run in development (build locally): "commands": "bun dist/deploy-commands.js",
+To run in development (build locally):
 
 ```bash
 docker compose -f docker-compose.dev.yml up --build
