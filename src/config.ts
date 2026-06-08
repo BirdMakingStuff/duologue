@@ -11,7 +11,27 @@ if (!existsSync(configTomlPath)) {
   process.exit(1);
 }
 
+interface DiscordConfig {
+  token: string;
+  client_id: string;
+}
+
+interface BehaviourConfig {
+  polling_interval: number;
+}
+
+interface EdDiscussionConfig {
+  tokens: string[];
+  allowed_courses: number[];
+}
+
+interface Config {
+  Discord: DiscordConfig;
+  Behaviour: BehaviourConfig;
+  EdDiscussion: EdDiscussionConfig;
+}
+
 const configRaw = readFileSync(configTomlPath, 'utf8');
-export const CONFIG = tomlLoad(configRaw);
+export const CONFIG = tomlLoad(configRaw) as unknown as Config;
 
 console.log(`[${(new Date()).toLocaleString()}] Loaded config.toml.`);
