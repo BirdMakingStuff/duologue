@@ -101,8 +101,7 @@ let edStorage: EdStorage = {
 // ED_COURSES: comma-separated list of numerical course IDs to whitelist.
 // If missing or empty, the whitelist is empty and no courses are allowed.
 function parseCourseWhitelist(): Set<string> {
-    let rawList = CONFIG["EdDiscussion"].allowed_courses;
-    rawList = rawList.map((id: any) => id.toString().trim()).filter((id: string) => id !== '');
+    const rawList = CONFIG["EdDiscussion"].allowed_courses.map(id => String(id).trim()).filter(id => id !== '');
     const parts = new Set<string>();
     for (const id of rawList) {
         if (!/^\d+$/.test(id)) {
