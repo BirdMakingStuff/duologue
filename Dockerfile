@@ -1,4 +1,4 @@
-FROM node:20-bullseye AS base
+FROM node:24-bookworm AS base
 WORKDIR /usr/src/app
 
 FROM base AS install
