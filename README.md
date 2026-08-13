@@ -9,6 +9,11 @@ It can also retrieve them when requested by the user.
 
 Copy `config.toml.example` to `config.toml`, then fill in the required fields.
 
+An Ed API token can be created at <https://edstem.org/au/settings/api-tokens>
+
+> [!NOTE]
+> The **API Tokens** section is hidden from the settings menu until you create your first token, so the link above is the only way to reach it initially.
+
 To run in development (build locally):
 
 ```bash
