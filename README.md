@@ -60,6 +60,12 @@ To run in production:
 npm run start
 ```
 
+To run for local development (runs TypeScript without build step):
+
+```bash
+npm run dev
+```
+
 ## Usage
 
 ### `/ping`
