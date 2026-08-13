@@ -25,9 +25,9 @@ npm run commands
 ```
 
 > [!NOTE]
-> Registering commands is a one-time setup step. The only time where
-> re-running registration is needed is if commands are added, removed,
-> or changed.
+> Registering commands is a one-time setup step that may take up to an hour.
+> The only time where re-running registration is needed is if
+> commands are added, removed, or changed.
 
 ## Deployment
 
