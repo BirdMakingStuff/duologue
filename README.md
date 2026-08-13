@@ -54,3 +54,5 @@ Whilst Ed Discussion is somewhat promoted within the university (dependent on le
 Additionally, Ed Discussion notifications are very slow to send out via email and not everyone wants to enable push notifications.
 
 This bot intends to serve both of these use cases.
+
+Changes made to demo
