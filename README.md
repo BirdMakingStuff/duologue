@@ -31,6 +31,8 @@ npm run commands
 
 ## Deployment
 
+### Running with Docker
+
 To run in development (build locally):
 
 ```bash
@@ -41,6 +43,21 @@ To run in production (pull from GitHub Container Registry):
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d
+```
+
+### Running with npm
+
+Install dependencies and build:
+
+```bash
+npm install
+npm run build
+```
+
+To run in production:
+
+```bash
+npm run start
 ```
 
 ## Usage
