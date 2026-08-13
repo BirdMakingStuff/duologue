@@ -277,7 +277,7 @@ export async function ReadCourse(courseId: number | string): Promise<Thread[]> {
         saveStorageToDisk();
         return newThreads;
     } catch (error) {
-        throw new Error(String(error));
+        throw error;
     }
 }
 
