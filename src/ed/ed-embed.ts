@@ -24,14 +24,12 @@ export default function EdEmbed(threadObj: Thread): EmbedBuilder {
         .setFooter({ text: threadObj.type === 'question' ? `Question #${threadObj.number}` : `Post #${threadObj.number}` })
         .setTimestamp(Date.parse(threadObj.created_at));
 
-    // 2. Updated author logic to inject your funny titles
     let authorName = threadObj.user?.name;
 
     if (threadObj.user_id === 0 || threadObj.is_anonymous) {
         const anonId = threadObj.anonymous_id;
         
         if (anonId !== undefined && anonId !== null) {
-            // Pick a funny name consistently using the ID math
             const animalIndex = anonId % ED_ANIMALS.length;
             const animal = ED_ANIMALS[animalIndex];
             authorName = `Anonymous ${animal} (#${anonId})`;
