@@ -14,6 +14,23 @@ An Ed API token can be created at <https://edstem.org/au/settings/api-tokens>
 > [!NOTE]
 > The **API Tokens** section is hidden from the settings menu until you create your first token, so the link above is the only way to reach it initially.
 
+### Registering commands with Discord
+
+Before running the bot for the first time, you need to register
+its slash commands with Discord:
+
+```bash
+npm install
+npm run commands
+```
+
+> [!NOTE]
+> Registering commands is a one-time setup step. The only time where
+> re-running registration is needed is if commands are added, removed,
+> or changed.
+
+## Deployment
+
 To run in development (build locally):
 
 ```bash
