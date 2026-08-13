@@ -39,7 +39,7 @@ Returns the ping of the bot.
 
 Binds the course with the given course ID to the channel which the command is run in.
 
-**[course_id]**: The course ID of the course to be bound. For example, in the URL "https://edstem.org/au/courses/12345/discussion/", the course ID is 12345.
+**[course_id]**: The course ID of the course to be bound. For example, in the URL `https://edstem.org/au/courses/12345/discussion/`, the course ID is 12345.
 
 **[thread_type]:** The type of thread that the channel should be subscribed to: announcements (threads created by instructors) or normal (all other threads). Channels can be subscribed to both (you will have to run the command twice but change this parameter)
 
@@ -50,7 +50,7 @@ Binds the course with the given course ID to the channel which the command is ru
 
 Unbinds the course with the given course ID from the channel which the command is run in. Note that for channels subscribed to both thread types, this will unsubscribe from both types.
 
-**[course_id]**: The course ID of the course to be bound. For example, in the URL "https://edstem.org/au/courses/12345/discussion/", the course ID is 12345.
+**[course_id]**: The course ID of the course to be bound. For example, in the URL `https://edstem.org/au/courses/12345/discussion/`, the course ID is 12345.
 
 ## Motivation
 
