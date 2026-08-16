@@ -1,4 +1,4 @@
-FROM node:24-bookworm AS base
+FROM node:22-bookworm AS base
 WORKDIR /usr/src/app
 
 FROM base AS install
