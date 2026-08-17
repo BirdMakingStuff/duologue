@@ -3,7 +3,7 @@ token = ""
 client_id = ""
 
 [Behaviour]
-polling_interval = 6000
+polling_interval = 60000
 
 [EdDiscussion]
 allowed_courses = []
