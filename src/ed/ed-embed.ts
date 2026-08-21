@@ -1,6 +1,20 @@
 import { EmbedBuilder, EmbedAuthorOptions } from 'discord.js';
 import type { Thread } from './ed-handler.js';
 
+
+const ED_ANIMALS = [
+    'Overcaffeinated Goblin',
+    'Degree Regretter',
+    'All-Nighter Champion',
+    'Code Compiler Pray-er',
+    'Deadline Dodger',
+    'StackOverflow Copy-Paster',
+    'Group Project Carry',
+    'Tears-in-the-Lab Enabler',
+    'ChatGPT Dependent',
+    'Procrastination Legend'
+];
+
 export default function EdEmbed(threadObj: Thread): EmbedBuilder {
     const embed = new EmbedBuilder()
         .setColor('#50288c')
@@ -10,9 +24,19 @@ export default function EdEmbed(threadObj: Thread): EmbedBuilder {
         .setFooter({ text: threadObj.type === 'question' ? `Question #${threadObj.number}` : `Post #${threadObj.number}` })
         .setTimestamp(Date.parse(threadObj.created_at));
 
-    const authorName = threadObj.user_id === 0 || threadObj.is_anonymous
-        ? `Anonymous #${threadObj.anonymous_id ?? 'N/A'}`
-        : threadObj.user?.name;
+    let authorName = threadObj.user?.name;
+
+    if (threadObj.user_id === 0 || threadObj.is_anonymous) {
+        const anonId = threadObj.anonymous_id;
+        
+        if (anonId !== undefined && anonId !== null) {
+            const animalIndex = anonId % ED_ANIMALS.length;
+            const animal = ED_ANIMALS[animalIndex];
+            authorName = `Anonymous ${animal} (#${anonId})`;
+        } else {
+            authorName = 'Anonymous User';
+        }
+    }
 
     if (authorName) {
         const author: EmbedAuthorOptions = {
